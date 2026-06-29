@@ -51,15 +51,18 @@ function applyRoleUI() {
   $('userAvatar').title = `${u.name} (${u.role})`;
 
   if (u.role === 'admin') {
-    // Show admin tab
     document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
-    // Hide name field for admin form (admin can still set name freely)
   } else {
-    // Pegawai: pre-fill name and make read-only
+    // Pegawai: pre-fill name, read-only
     $('nameInput').value = u.name;
     $('nameInput').readOnly = true;
     $('nameInput').style.background = '#f1f5f9';
     $('nameInput').style.color = '#64748b';
+
+    // Pegawai: tanggal & waktu read-only, auto-update tiap menit
+    const lockStyle = el => { el.readOnly = true; el.style.background = '#f1f5f9'; el.style.color = '#64748b'; el.style.pointerEvents = 'none'; };
+    lockStyle($('dateInput'));
+    lockStyle($('timeInput'));
 
     // Show user strip
     const strip = $('userStrip');
@@ -81,14 +84,18 @@ async function logout() {
 /* ── Live DateTime ── */
 function initDateTime() {
   const el = $('liveDateTime');
-  const update = () => {
+  const syncInputs = () => {
     const now = new Date();
     el.textContent = now.toLocaleDateString('id-ID', {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     }) + ' · ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    if (currentUser && currentUser.role === 'pegawai') {
+      $('dateInput').value = now.toISOString().split('T')[0];
+      $('timeInput').value = now.toTimeString().slice(0, 5);
+    }
   };
-  update();
-  setInterval(update, 30000);
+  syncInputs();
+  setInterval(syncInputs, 30000);
 
   const now = new Date();
   $('dateInput').value = now.toISOString().split('T')[0];
