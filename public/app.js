@@ -59,10 +59,22 @@ function applyRoleUI() {
     $('nameInput').style.background = '#f1f5f9';
     $('nameInput').style.color = '#64748b';
 
-    // Pegawai: tanggal & waktu read-only, auto-update tiap menit
-    const lockStyle = el => { el.readOnly = true; el.style.background = '#f1f5f9'; el.style.color = '#64748b'; el.style.pointerEvents = 'none'; };
+    // Pegawai: tanggal & waktu read-only, ganti ke type text agar date/time picker tidak muncul
+    const lockStyle = el => {
+      el.type = 'text';
+      el.readOnly = true;
+      el.style.background = '#f1f5f9';
+      el.style.color = '#64748b';
+      el.style.cursor = 'default';
+      el.style.pointerEvents = 'none';
+    };
     lockStyle($('dateInput'));
     lockStyle($('timeInput'));
+
+    // Pegawai: sembunyikan tombol galeri, hanya bisa pakai kamera
+    $('openGalleryBtn').style.display = 'none';
+    const cameraP = document.querySelector('#cameraIdle p');
+    if (cameraP) cameraP.textContent = 'Ambil foto dengan kamera';
 
     // Show user strip
     const strip = $('userStrip');
